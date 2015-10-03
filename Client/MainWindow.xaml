@@ -1,0 +1,62 @@
+﻿<Window x:Class="Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow"
+         ResizeMode="CanMinimize" Height="331.5" Width="681" Closing="Window_Closing" >
+
+    <Grid Margin="0,-63,0,14">
+        <ListView Margin="10,141,10,0" Name="pcRemote" ItemsSource="{Binding Server}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="NickName" Width="150" DisplayMemberBinding="{Binding Nickname}" />
+                    <GridViewColumn Header="Ip" Width="150" DisplayMemberBinding="{Binding Ip}" />
+                    <GridViewColumn Header="Port" Width="150" DisplayMemberBinding="{Binding Port}" />
+                    <GridViewColumn Header="Connection Status" Width="200" DisplayMemberBinding="{Binding Status}" />
+                </GridView>
+            </ListView.View>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListViewItem_OnClick" />
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+        <Grid  Height="60" Margin="10,76,10,0" VerticalAlignment="Top">
+            <Border>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#051a4a" Offset="0"/>
+
+                        <GradientStop Color="#259bd1" Offset="0.99"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+
+            <Button Width="140" Height="60" BorderThickness="0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left" Click="Button_Click_Add" Background="Transparent" FontSize="13" >
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="140" Height="60">
+                    <Image Source="Images/plus.png" VerticalAlignment="Center" Width="30" Height="40" Margin="10,0,20,0" RenderTransformOrigin="-1.567,0.35"/>
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,0,0"><Run Text="Add Server"/></TextBlock>
+                </StackPanel>
+            </Button>
+            <Button x:Name="buttonconnect" Width="140" Height="60" BorderThickness="0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"  Click="Button_Click_Connect"  Background="Transparent" FontSize="13" Margin="140,0,0,0" RenderTransformOrigin="0.5,0.5" >
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="140" Height="60">
+                    <Image Source="Images/connect.png" VerticalAlignment="Center" Width="30" Height="40" Margin="10,0,20,0" RenderTransformOrigin="-1.567,0.35"/>
+                    <TextBlock x:Name="textconnect" VerticalAlignment="Center" Margin="0,0,0,0" Text="Connect"></TextBlock>
+                </StackPanel>
+            </Button>
+           
+            <Button Width="140" Height="60" BorderThickness="0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"  Background="Transparent" FontSize="13" Margin="285,0,0,0" Click="Button_Click_delete" >
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="140" Height="60">
+                    <Image Source="Images/delete.png" VerticalAlignment="Center" Width="30" Height="40" Margin="10,0,20,0" RenderTransformOrigin="-1.567,0.35"/>
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,0,0"><Run Text="Delete"/></TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Width="140" Height="60" BorderThickness="0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"  Background="Transparent" FontSize="13" Margin="425,0,0,0" Click="Button_Click_modify" >
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Width="140" Height="60">
+                    <Image Source="Images/modify.png" VerticalAlignment="Center" Width="30" Height="40" Margin="10,0,20,0" RenderTransformOrigin="-1.567,0.35"/>
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,0,0"><Run Text="Modify"/></TextBlock>
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
+</Window>
