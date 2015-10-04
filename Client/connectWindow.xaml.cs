@@ -41,6 +41,7 @@ namespace Client
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             mw.pcRemote.UnselectAll();
+            mw.cw = null;
         }
      
     }

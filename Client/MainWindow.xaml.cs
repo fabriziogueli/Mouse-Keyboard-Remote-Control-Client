@@ -139,18 +139,22 @@ namespace Client
             else if ((Server)pcRemote.SelectedItem != null && ((Server)(pcRemote.SelectedItem)).Connected)
             {
                 ((Server)(pcRemote.SelectedItem)).Disconnect();
+                pcRemote.UnselectAll();
             }
         }
 
 
         public void ConnectionHandler(object sender, PropertyChangedExtendedEventArgs<bool> args)
         {
-                     
+            Dispatcher.Invoke(new Action(() =>
+            {
             if (args.PropertyName == "connected")
             {
                 if (!((Server)(sender)).Connected)
                 {
-                    stopCapturing();
+                    
+                        stopCapturing();
+                    
                 }
 
                 if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Connected))
@@ -164,7 +168,7 @@ namespace Client
             }
             ICollectionView view = CollectionViewSource.GetDefaultView(items);
             view.Refresh();
-                    
+                }));    
 
         }
 
@@ -198,6 +202,7 @@ namespace Client
                 System.Windows.Forms.MessageBox.Show("C'è un problema di connessione con il RightServer", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
 
             }
+            s.Disconnect();
         }
 
         private void ListViewItem_OnClick(object sender, MouseButtonEventArgs e)
