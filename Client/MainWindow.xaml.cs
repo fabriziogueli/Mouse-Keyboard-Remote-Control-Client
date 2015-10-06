@@ -151,10 +151,8 @@ namespace Client
             if (args.PropertyName == "connected")
             {
                 if (!((Server)(sender)).Connected)
-                {
-                    
-                        stopCapturing();
-                    
+                {                    
+                        stopCapturing();                    
                 }
 
                 if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Connected))
@@ -163,6 +161,11 @@ namespace Client
                 }
                 else if(pcRemote.SelectedItem != null && !(((Server)(pcRemote.SelectedItem)).Connected))
                 {
+                    if (((Server)(pcRemote.SelectedItem)).Side == 0)
+                        ch.LeftServer = null;
+                    else if (((Server)(pcRemote.SelectedItem)).Side == 1)
+                        ch.RightServer = null;
+
                     textconnect.Text = "Connect";
                 }
             }
@@ -182,6 +185,7 @@ namespace Client
         {
             System.Windows.Forms.MessageBox.Show("Connessione fallita, riprova!", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
         }
+
         public void addListnewItem(String nickName, String ipAddress, Int16 port, string user, string pass, Boolean Connection)
         {
             Server s = new Server(ipAddress, port, nickName, user, pass);

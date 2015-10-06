@@ -255,8 +255,10 @@ namespace Client
             mystruct.me = msg;
             mystruct.mhs = MyMouseHookStruct;
 
-            int x = (int)((mystruct.mhs.pt.x / width) * 65535);
             int y = (int)((mystruct.mhs.pt.y / height) * 65535);
+           
+
+
             short mouseD = (short)(mystruct.mhs.mouseData >> 16);
             mystruct.mhs.mouseData = mouseD;
           
@@ -337,7 +339,9 @@ namespace Client
                 {
                     try
                     {
-                     
+
+                    mystruct.mhs.pt.x = (int)((mystruct.mhs.pt.x / width) * 65535);
+                    mystruct.mhs.pt.y = (int)((mystruct.mhs.pt.y / height) * 65535);
                     Mouse.OverrideCursor = Cursors.None;
                     Stream stm;
                     String strCaption = "x = " +

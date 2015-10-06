@@ -320,8 +320,7 @@ namespace Client
         private void DoWorkConnect(object sender, DoWorkEventArgs eventArgs)
         {         
             try
-            {
-             
+            {            
                 tcpclnt = new TcpClient();
                 Console.WriteLine("Connecting.....");
                 Status = "Connecting...";
