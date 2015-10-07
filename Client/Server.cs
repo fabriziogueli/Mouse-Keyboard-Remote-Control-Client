@@ -34,6 +34,7 @@ namespace Client
 
         public string Status { get; set; }
         private TcpClient tcpclnt;
+        private TcpClient tcpClipBoard;
 
         private ECDiffieHellmanCng exch;
         private byte[] publicKey;
@@ -171,7 +172,7 @@ namespace Client
             if (data != null)
             {
                 Stream stm;
-                stm = tcpclnt.GetStream();
+                stm = tcpClipBoard.GetStream();
                 int ik = 3; 
                 byte[] ba = BitConverter.GetBytes(ik);
                 stm.Write(ba, 0, ba.Length);
@@ -190,7 +191,7 @@ namespace Client
         public Object GetClipboardFromStream()
         {
             Stream stm;
-            stm = tcpclnt.GetStream();
+            stm = tcpClipBoard.GetStream();
             int ik = 2; 
             byte[] ba = BitConverter.GetBytes(ik);
             stm.Write(ba, 0, ba.Length);
@@ -316,6 +317,24 @@ namespace Client
             bw.RunWorkerAsync();
         }
 
+        public void ConnectClipBoard()
+        {
+
+            tcpClipBoard = new TcpClient();
+            Console.WriteLine("Connecting ClipBoard....."+ (Port+1));
+            tcpClipBoard.NoDelay = true;
+            tcpClipBoard.Connect(Ip, Port+1);
+
+            StreamWriter stream = new StreamWriter(tcpClipBoard.GetStream());
+
+            stream.WriteLine(0);
+            stream.Flush();
+
+            Console.WriteLine("Connected clipboard");
+                      
+
+        }
+
 
         private void DoWorkConnect(object sender, DoWorkEventArgs eventArgs)
         {         
@@ -428,6 +447,8 @@ namespace Client
                         Status = "Connected as LeftServer";
                     else
                         Status = "Connected as RightServer";
+
+                    ConnectClipBoard();
                 }                   
 
             }
