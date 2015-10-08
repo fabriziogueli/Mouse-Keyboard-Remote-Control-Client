@@ -30,25 +30,28 @@ namespace Client
 
         public string Nickname { get; set; }
         public string Password { get; set; }
-        private bool _connected;
 
-        public string Status { get; set; }
+        public int _status { get; set; } // 0= Disconnected, 1=Connected, 2 = Connecting
+
+        public string WinStatus { get; set; }
         private TcpClient tcpclnt;
         private TcpClient tcpClipBoard;
 
         private ECDiffieHellmanCng exch;
         private byte[] publicKey;
 
-        public bool Connected
+
+        public int Status
         {
-            get { return _connected; }
+            get { return _status; }
             set
             {
-                bool old = _connected;
-                _connected = value;
-                OnPropertyChanged(old, _connected, "connected");
+                int old = _status;
+                _status = value;
+                OnPropertyChanged(old, _status, "connected");
             }
         }
+
 
         [DllImport("mpr.dll")]
         private static extern int WNetAddConnection2(NetResource netResource,
@@ -113,6 +116,9 @@ namespace Client
             Password = password;
             Username = username;
             Nickname = nickname;
+
+            _status = 0;
+            WinStatus = "Disconnected";
 
             exch = new ECDiffieHellmanCng(256);
             exch.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
@@ -235,7 +241,10 @@ namespace Client
             }
             catch (Exception ioe)
             {
-                Connected = false;
+        //        Connected = false;
+                Status= 0;
+              
+
                 Win.Dispatcher.Invoke(new Action(() =>
                 {
                     Win.connectionProblem(this);
@@ -259,7 +268,8 @@ namespace Client
             }
             catch (Exception ioe)
             {
-                Connected = false;
+                Status = 0;
+         //       Status.Second = "Disconnected";
                 Win.Dispatcher.Invoke(new Action(() =>
                 {
                     Win.connectionProblem(this);
@@ -349,13 +359,15 @@ namespace Client
             try
             {            
                 tcpclnt = new TcpClient();
-                Console.WriteLine("Connecting.....");
-                Status = "Connecting...";
+                Console.WriteLine("Connecting.....");              
+                Status = 2;
+               
                 Win.Dispatcher.Invoke(new Action(() =>
                 {
                     Win.RefreshListview();
                 }));
                 tcpclnt.NoDelay = true;
+
                 tcpclnt.Connect(Ip, Port);
                 Console.WriteLine("Connected");
 
@@ -442,20 +454,17 @@ namespace Client
         {
             if (!eventArgs.Cancelled && eventArgs.Error == null)
             {
-                Connected = (bool)eventArgs.Result;
+                bool Connected = (bool)eventArgs.Result;
                 //  Window.SetServer(this);
                 if (!Connected){
-                    Status = "Disconnected";
+                    Status = 0;
+                   
                     Win.AuthFailed();
                     Console.WriteLine("Non connesso");
                 }
                 else
-                {
-                    if (Side == 0)
-                        Status = "Connected as LeftServer";
-                    else
-                        Status = "Connected as RightServer";
-
+                {                                                  
+                    Status = 1;
                     ConnectClipBoard();
                 }                   
 
@@ -463,8 +472,8 @@ namespace Client
             else
             {
                 Console.WriteLine(eventArgs.Error.Message);
-                Status = "Disconnected";
-                Connected = false;
+                Status = 0;
+               
                 
             }
 
@@ -478,8 +487,8 @@ namespace Client
 
         public void Disconnect()
         {
-            Status = "Disconnected";
-            Connected = false;          
+            Status = 0;
+           
             try
             {
                 if (tcpclnt != null)
@@ -507,11 +516,11 @@ namespace Client
 
         }
 
-        public event PropertyChangedExtendedEventHandler<bool> PropertyChanged;
-        protected virtual void OnPropertyChanged(bool oldValue, bool newValue, [CallerMemberName] string propertyName = null)
+        public event PropertyChangedExtendedEventHandler<int> PropertyChanged;
+        protected virtual void OnPropertyChanged(int oldValue, int newValue, [CallerMemberName] string propertyName = null)
         {
             var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedExtendedEventArgs<bool>(propertyName, oldValue, newValue));
+            if (handler != null) handler(this, new PropertyChangedExtendedEventArgs<int>(propertyName, oldValue, newValue));
         }
     }
 }

@@ -147,11 +147,7 @@ namespace Client
 
         public ClientHook()
         {
-            /*     RightServer = new Server("192.168.1.140", 8001,"pc-casa","Fabrizio", "Dio");
-                RightServer.Connect();
-               LeftServer = new Server("192.168.1.141", 8001, "lupi", null);
-                LeftServer.Connect(); */
-      
+           
         }
 
         public void serverConnect(Server s, Boolean isRightServer)
@@ -225,8 +221,9 @@ namespace Client
                         }
                         catch(Exception e)
                         {
-                            isCapturing = false; //da vedere sta parte
-                            currentServer.Connected = false;
+                            isCapturing = false; //da vedere sta parte                         
+                            currentServer.Status = 0;
+                            
                             currentServer.Disconnect();
                             Win.Dispatcher.Invoke(new Action(() =>
                             {
@@ -271,10 +268,10 @@ namespace Client
             {
 
 
-                if ((mystruct.mhs.pt.x >= width || mystruct.mhs.pt.x <= 0) && !isCapturing && ((RightServer != null && RightServer.Connected == true) || (LeftServer != null && LeftServer.Connected == true)))
+                if ((mystruct.mhs.pt.x >= width || mystruct.mhs.pt.x <= 0) && !isCapturing && ((RightServer != null && RightServer.Status == 1) || (LeftServer != null && LeftServer.Status == 1)))
                 {
                     
-                    if (mystruct.mhs.pt.x >= width && RightServer != null && RightServer.Connected && !isCapturing)
+                    if (mystruct.mhs.pt.x >= width && RightServer != null && RightServer.Status == 1 && !isCapturing)
                     {
                         Console.WriteLine("RightServer");
                         isCapturing = true;
@@ -288,7 +285,7 @@ namespace Client
     
                         return 1;                                                      
                     }
-                    else if (mystruct.mhs.pt.x <= 0 && LeftServer != null && LeftServer.Connected && !isCapturing)
+                    else if (mystruct.mhs.pt.x <= 0 && LeftServer != null && LeftServer.Status == 1 && !isCapturing)
                     {
                         Console.WriteLine("LeftServer");
                         isCapturing = true;

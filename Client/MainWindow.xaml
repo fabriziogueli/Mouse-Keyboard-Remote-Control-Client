@@ -11,7 +11,7 @@
                     <GridViewColumn Header="NickName" Width="150" DisplayMemberBinding="{Binding Nickname}" />
                     <GridViewColumn Header="Ip" Width="150" DisplayMemberBinding="{Binding Ip}" />
                     <GridViewColumn Header="Port" Width="150" DisplayMemberBinding="{Binding Port}" />
-                    <GridViewColumn Header="Connection Status" Width="200" DisplayMemberBinding="{Binding Status}" />
+                    <GridViewColumn Header="Connection Status" Width="200" DisplayMemberBinding="{Binding WinStatus}" />
                 </GridView>
             </ListView.View>
             <ListView.ItemContainerStyle>

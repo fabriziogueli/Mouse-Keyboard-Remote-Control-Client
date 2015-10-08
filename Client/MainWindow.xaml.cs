@@ -99,7 +99,7 @@ namespace Client
                 return;
             }
 
-            if ((Server)pcRemote.SelectedItem != null && !(((Server)(pcRemote.SelectedItem)).Connected))
+            if ((Server)pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 0))
             {
                 if (cw == null)
                     cw = new connectWindow();
@@ -107,19 +107,19 @@ namespace Client
                     cw.Activate();
 
                 cw.mw = this;
-                if (ch.LeftServer != null && ch.LeftServer.Connected)
+                if (ch.LeftServer != null && (ch.LeftServer.Status == 1 || ch.LeftServer.Status == 2))
                 {
                     cw.leftbuttonmonitor.IsEnabled = false;
                 }
 
-                if (ch.RightServer != null && ch.RightServer.Connected)
+                if (ch.RightServer != null && (ch.RightServer.Status == 1 || ch.RightServer.Status == 2))
                 {
                     cw.rightbuttonmonitor.IsEnabled = false;
                 }
 
                 cw.Show();
             }
-            else if ((Server)pcRemote.SelectedItem != null && ((Server)(pcRemote.SelectedItem)).Connected)
+            else if ((Server)pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 1 || ((Server)(pcRemote.SelectedItem)).Status == 2 ))
             {
                 ((Server)(pcRemote.SelectedItem)).Disconnect();
                 pcRemote.UnselectAll();
@@ -127,22 +127,54 @@ namespace Client
         }
 
 
-        public void ConnectionHandler(object sender, PropertyChangedExtendedEventArgs<bool> args)
+        public void ConnectionHandler(object sender, PropertyChangedExtendedEventArgs<int> args)
         {
             Dispatcher.Invoke(new Action(() =>
             {
             if (args.PropertyName == "connected")
             {
-                if (!((Server)(sender)).Connected)
+                switch(((Server)sender).Status)
+                {
+                    case 0: ((Server)sender).WinStatus = "Disconnected"; break;
+                    case 1: if (((Server)sender).Side == 0)
+                        ((Server)sender).WinStatus = "Connected as LeftServer";
+
+                        else if (((Server)sender).Side == 1)
+                            ((Server)sender).WinStatus = "Connected as RightServer";
+                        break;
+                    case 2: ((Server)sender).WinStatus = "Connecting..."; break;
+                }
+
+                if(cw != null && cw.IsVisible)
+                {
+                    if (ch.LeftServer != null)
+                    {
+                        if (ch.LeftServer.Status == 1 || ch.LeftServer.Status == 2)
+                        cw.leftbuttonmonitor.IsEnabled = false;
+                        else if(ch.LeftServer.Status == 0)
+                            cw.leftbuttonmonitor.IsEnabled = true;
+                    }
+
+                    if (ch.RightServer != null)
+                    {
+                        if ((ch.RightServer.Status == 1 || ch.RightServer.Status == 2))
+                        cw.rightbuttonmonitor.IsEnabled = false;
+                        else if(ch.RightServer.Status == 0)
+                            cw.rightbuttonmonitor.IsEnabled = true;
+                    }
+
+                }
+
+                if (((Server)(sender)).Status == 0)
                 {                    
                         stopCapturing();                    
                 }
 
-                if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Connected))
+                if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 1))
                 {
                     textconnect.Text = "Disconnect";
                 }
-                else if(pcRemote.SelectedItem != null && !(((Server)(pcRemote.SelectedItem)).Connected))
+                else if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 0))
                 {
                     if (((Server)(pcRemote.SelectedItem)).Side == 0)
                         ch.LeftServer = null;
@@ -172,7 +204,6 @@ namespace Client
         public void addListnewItem(String nickName, String ipAddress, Int16 port, string user, string pass, Boolean Connection)
         {
             Server s = new Server(ipAddress, port, nickName, user, pass);
-            s.Status = "Disconnected";
             items.Add(s);
             pcRemote.ItemsSource = items;
         }
@@ -204,7 +235,7 @@ namespace Client
                 if (!buttonconnect.IsEnabled)
                     buttonconnect.IsEnabled = true;
 
-                if (server.Connected || server.Status.Equals("Connecting..."))
+                if (server.Status == 1 || server.Status == 2)
                 {
                     textconnect.Text = "Disconnect";
                 }
@@ -222,7 +253,7 @@ namespace Client
         {
             if ((Server)pcRemote.SelectedItem != null)
             {
-                if (!((Server)pcRemote.SelectedItem).Connected)
+                if (((Server)pcRemote.SelectedItem).Status == 0)
                 {
                     items.Remove((Server)pcRemote.SelectedItem);
                 }
@@ -249,7 +280,7 @@ namespace Client
             if (s == null)
                 return;
 
-            if(s.Connected)
+            if(s.Status == 1 || s.Status == 2)
             {
                 System.Windows.Forms.MessageBox.Show("Il server che vuoi modificare è attualmente connesso", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
                 return;
