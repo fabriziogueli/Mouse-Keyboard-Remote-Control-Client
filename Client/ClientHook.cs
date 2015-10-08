@@ -274,7 +274,7 @@ namespace Client
                 if ((mystruct.mhs.pt.x >= width || mystruct.mhs.pt.x <= 0) && !isCapturing && ((RightServer != null && RightServer.Connected == true) || (LeftServer != null && LeftServer.Connected == true)))
                 {
                     
-                    if (mystruct.mhs.pt.x >= width && RightServer != null && RightServer.Connected)
+                    if (mystruct.mhs.pt.x >= width && RightServer != null && RightServer.Connected && !isCapturing)
                     {
                         Console.WriteLine("RightServer");
                         isCapturing = true;
@@ -288,7 +288,7 @@ namespace Client
     
                         return 1;                                                      
                     }
-                    else if (mystruct.mhs.pt.x <= 0 && LeftServer != null && LeftServer.Connected)
+                    else if (mystruct.mhs.pt.x <= 0 && LeftServer != null && LeftServer.Connected && !isCapturing)
                     {
                         Console.WriteLine("LeftServer");
                         isCapturing = true;

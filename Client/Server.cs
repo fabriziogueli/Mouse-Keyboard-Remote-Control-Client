@@ -319,7 +319,7 @@ namespace Client
 
         public void ConnectClipBoard()
         {
-
+            try { 
             tcpClipBoard = new TcpClient();
             Console.WriteLine("Connecting ClipBoard....."+ (Port+1));
             tcpClipBoard.NoDelay = true;
@@ -331,7 +331,15 @@ namespace Client
             stream.Flush();
 
             Console.WriteLine("Connected clipboard");
-                      
+            }
+            catch(Exception e)
+            {
+                Disconnect();
+                Win.Dispatcher.Invoke(new Action(() =>
+                {
+                    Win.connectionProblem(this);
+                })); 
+            }
 
         }
 
@@ -481,11 +489,19 @@ namespace Client
                     tcpclnt = null;
                   
                 }
+
+                if(tcpClipBoard != null)
+                {
+                    tcpClipBoard.GetStream().Dispose();
+                    tcpClipBoard.Close();
+                    tcpClipBoard = null;
+                }
             }
             catch (Exception e)
             {
 
                 tcpclnt = null;
+                tcpClipBoard = null;
                
             }
 

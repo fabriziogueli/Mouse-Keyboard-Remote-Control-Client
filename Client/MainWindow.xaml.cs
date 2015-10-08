@@ -54,21 +54,6 @@ namespace Client
 
 
 
-        /*Read fine server*/
-        /*byte[] b1 = new byte[100];
-        int k1 = stm.Read(b1, 0, 100);
-        for (int i = 0; i < k1; i++)
-            Console.Write(Convert.ToChar(b1[i]));
-        tcpclnt.Close();*/
-        /*        }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Error..... " + e.StackTrace);
-                    Console.WriteLine("Error..... " + e.Message);
-                }*/
-
-
-
         private void Button_Click_Add(object sender, RoutedEventArgs e)
         {
             if (secondWindow == null)
@@ -92,9 +77,7 @@ namespace Client
                 twin.Topmost = true;
                 twin.Activate();              
                 twin.Show();
-                this.Hide();
-            
-            
+                this.Hide();           
         }
 
         public void stopCapturing()
