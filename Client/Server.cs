@@ -457,10 +457,12 @@ namespace Client
                 bool Connected = (bool)eventArgs.Result;
                 //  Window.SetServer(this);
                 if (!Connected){
-                    Status = 0;
-                   
+
+                    if (Status != 1) { 
+                    Status = 0;                  
                     Win.AuthFailed();
                     Console.WriteLine("Non connesso");
+                    }
                 }
                 else
                 {                                                  
@@ -492,8 +494,8 @@ namespace Client
             try
             {
                 if (tcpclnt != null)
-                {                    
-                    tcpclnt.GetStream().Dispose();
+                {
+                    tcpclnt.GetStream().Close();
                     tcpclnt.Close();
                     tcpclnt = null;
                   
@@ -501,7 +503,7 @@ namespace Client
 
                 if(tcpClipBoard != null)
                 {
-                    tcpClipBoard.GetStream().Dispose();
+                    tcpClipBoard.GetStream().Close();
                     tcpClipBoard.Close();
                     tcpClipBoard = null;
                 }

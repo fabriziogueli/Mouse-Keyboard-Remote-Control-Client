@@ -210,6 +210,8 @@ namespace Client
 
         public void connectionProblem(Server s)
         {
+            if(s.Status != 0)
+            { 
             Mouse.OverrideCursor = Cursors.Arrow;
             if(s!= null && s.Side == 0)
             {
@@ -221,6 +223,7 @@ namespace Client
 
             }
             s.Disconnect();
+            }
         }
 
         private void ListViewItem_OnClick(object sender, MouseButtonEventArgs e)

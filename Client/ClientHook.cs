@@ -88,9 +88,10 @@ namespace Client
         }
 
         struct KeyboardStruct
-        {
+        {           
             public IntPtr wparam;
             public KBDLLHOOKSTRUCT kb;
+            public Int32 padding;
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
@@ -197,13 +198,17 @@ namespace Client
 
                             stm = currentServer.getStream();
 
-                            int ik = 1;
-                            byte[] ba = BitConverter.GetBytes(ik);
-                            stm.Write(ba, 0, ba.Length);
+                            Int32 ik = 1;
+                            byte[] keyboard = BitConverter.GetBytes(ik);
+               //             stm.Write(ba, 0, ba.Length);
 
-                            byte[] bytestream = getBytesKey(ks);
+                            
 
-                            stm.Write(bytestream, 0, bytestream.Length);
+                            byte[] bytestream = getBytesKey(ks); 
+                            byte[] sending = new byte[bytestream.Length + sizeof(Int32)];
+                            keyboard.CopyTo(sending, 0);
+                            bytestream.CopyTo(sending, sizeof(Int32));
+                            stm.Write(sending, 0, sending.Length);
 
 
                             //You must get the active form because it is a static function.
@@ -224,7 +229,7 @@ namespace Client
                             isCapturing = false; //da vedere sta parte                         
                             currentServer.Status = 0;
                             
-                            currentServer.Disconnect();
+      //                      currentServer.Disconnect();
                             Win.Dispatcher.Invoke(new Action(() =>
                             {
                                 Win.stopCapturing();
@@ -348,13 +353,16 @@ namespace Client
 
                     stm = currentServer.getStream();
 
-                    int im = 0;
-                    byte[] ba = BitConverter.GetBytes(im);
-                    stm.Write(ba, 0, ba.Length);
+                   Int32 im = 0;
+                    byte[] mouse = BitConverter.GetBytes(im);
+   //                 stm.Write(ba, 0, ba.Length);
                     
                     byte[] bytestream = getBytes(mystruct);
                     Console.WriteLine("Transmitting.....");
-                    stm.Write(bytestream, 0, bytestream.Length);
+                    byte[] sending = new byte[bytestream.Length + sizeof(Int32)];
+                    mouse.CopyTo(sending, 0);
+                    bytestream.CopyTo(sending, sizeof(Int32));
+                    stm.Write(sending, 0, sending.Length);
 
                     //You must get the active form because it is a static function.
                     Console.WriteLine(strCaption + " event" + msg);
@@ -365,8 +373,9 @@ namespace Client
                     }
                     catch(Exception e)
                     {
+                        Console.WriteLine(e.Message);
                         isCapturing = false; //da vedere sta parte
-                        currentServer.Disconnect();
+        //                currentServer.Disconnect();
                         Win.Dispatcher.Invoke(new Action(() =>
                             {
                                 Win.stopCapturing();
