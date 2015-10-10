@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Security.Cryptography;
 using System.Net.Sockets;
+using System.Net;
 
 namespace Client
 {
@@ -35,7 +36,8 @@ namespace Client
 
         public string WinStatus { get; set; }
         private TcpClient tcpclnt;
-        private TcpClient tcpClipBoard;
+        private UdpClient uclient;
+    //    private TcpClient tcpClipBoard;
 
         private ECDiffieHellmanCng exch;
         private byte[] publicKey;
@@ -168,6 +170,7 @@ namespace Client
             }
             catch (Exception e)
             {
+
                 Console.WriteLine(e.Message);
             }
             return null;
@@ -178,7 +181,7 @@ namespace Client
             if (data != null)
             {
                 Stream stm;
-                stm = tcpClipBoard.GetStream();
+                stm = tcpclnt.GetStream();
                 int ik = 3; 
                 byte[] ba = BitConverter.GetBytes(ik);
                 stm.Write(ba, 0, ba.Length);
@@ -197,7 +200,7 @@ namespace Client
         public Object GetClipboardFromStream()
         {
             Stream stm;
-            stm = tcpClipBoard.GetStream();
+            stm = tcpclnt.GetStream();
             int ik = 2; 
             byte[] ba = BitConverter.GetBytes(ik);
             stm.Write(ba, 0, ba.Length);
@@ -241,14 +244,12 @@ namespace Client
             }
             catch (Exception ioe)
             {
-        //        Connected = false;
-                Status= 0;
-              
+             //   Status= 0;
 
                 Win.Dispatcher.Invoke(new Action(() =>
                 {
                     Win.connectionProblem(this);
-                })); 
+                }));
             }
         }
 
@@ -268,12 +269,11 @@ namespace Client
             }
             catch (Exception ioe)
             {
-                Status = 0;
-         //       Status.Second = "Disconnected";
+         //       Status = 0;
                 Win.Dispatcher.Invoke(new Action(() =>
                 {
                     Win.connectionProblem(this);
-                })); 
+                }));
             }
         }
 
@@ -327,7 +327,7 @@ namespace Client
             bw.RunWorkerAsync();
         }
 
-        public void ConnectClipBoard()
+  /*      public void ConnectClipBoard()
         {
             try { 
             tcpClipBoard = new TcpClient();
@@ -351,13 +351,14 @@ namespace Client
                 })); 
             }
 
-        }
+        } */
 
 
         private void DoWorkConnect(object sender, DoWorkEventArgs eventArgs)
         {         
             try
-            {            
+            {
+               
                 tcpclnt = new TcpClient();
                 Console.WriteLine("Connecting.....");              
                 Status = 2;
@@ -456,18 +457,19 @@ namespace Client
             {
                 bool Connected = (bool)eventArgs.Result;
                 //  Window.SetServer(this);
-                if (!Connected){
-
-                    if (Status != 1) { 
+                if (!Connected){                  
                     Status = 0;                  
                     Win.AuthFailed();
                     Console.WriteLine("Non connesso");
-                    }
                 }
                 else
-                {                                                  
+                {
+                    IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(Ip), Port);
+                    uclient = new UdpClient();
+                    uclient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                    uclient.DontFragment = true;
+                    uclient.Connect(ipep);                     
                     Status = 1;
-                    ConnectClipBoard();
                 }                   
 
             }
@@ -487,6 +489,11 @@ namespace Client
             return tcpclnt.GetStream();
         }
 
+        public UdpClient getUdpClient()
+        {
+            return uclient;
+        }
+
         public void Disconnect()
         {
             Status = 0;
@@ -495,25 +502,28 @@ namespace Client
             {
                 if (tcpclnt != null)
                 {
-                    tcpclnt.GetStream().Close();
+                    tcpclnt.GetStream().Dispose();
                     tcpclnt.Close();
                     tcpclnt = null;
                   
                 }
 
-                if(tcpClipBoard != null)
+                if (uclient != null)
                 {
-                    tcpClipBoard.GetStream().Close();
-                    tcpClipBoard.Close();
-                    tcpClipBoard = null;
+                    uclient.Client.Close();
+                    uclient.Close();
+
                 }
+                    
+
+                uclient = null;
+
             }
             catch (Exception e)
             {
 
                 tcpclnt = null;
-                tcpClipBoard = null;
-               
+                uclient = null;              
             }
 
         }

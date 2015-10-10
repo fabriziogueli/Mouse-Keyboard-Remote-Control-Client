@@ -71,29 +71,36 @@ namespace Client
 
         public void Capturing()
         {
+            Dispatcher.Invoke(new Action(() =>
+            {
             if (twin == null)
                 twin = new transparentWin();
 
                 twin.Topmost = true;
                 twin.Activate();              
                 twin.Show();
-                this.Hide();           
+                this.Hide();
+            }));
         }
 
         public void stopCapturing()
         {
+            Dispatcher.Invoke(new Action(() =>
+            {
+            Mouse.OverrideCursor = Cursors.Arrow;
              if(twin != null)
              {        
                  this.Activate();
                  this.Show();                
                  twin.Hide();
              }
+            })); 
         }
 
         private void Button_Click_Connect(object sender, RoutedEventArgs e)
         {
 
-            if ((Server)pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status.Equals("Connecting...")))
+            if ((Server)pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 2))
             {
                 ((Server)(pcRemote.SelectedItem)).Disconnect();
                 return;
@@ -119,7 +126,7 @@ namespace Client
 
                 cw.Show();
             }
-            else if ((Server)pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 1 || ((Server)(pcRemote.SelectedItem)).Status == 2 ))
+            else if ((Server)pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 1))
             {
                 ((Server)(pcRemote.SelectedItem)).Disconnect();
                 pcRemote.UnselectAll();
@@ -167,20 +174,27 @@ namespace Client
 
                 if (((Server)(sender)).Status == 0)
                 {                    
-                        stopCapturing();                    
+                        stopCapturing();
+                        if (((Server)(sender)).Side == 0)
+                            ch.LeftServer = null;
+                        else if (((Server)(sender)).Side == 1)
+                            ch.RightServer = null;
                 }
 
                 if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 1))
                 {
+                    buttonconnect.IsEnabled = true;
                     textconnect.Text = "Disconnect";
+                }
+                else if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 2))
+                {
+                    textconnect.Text = "Connecting";
+                    buttonconnect.IsEnabled = false;
+
                 }
                 else if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 0))
                 {
-                    if (((Server)(pcRemote.SelectedItem)).Side == 0)
-                        ch.LeftServer = null;
-                    else if (((Server)(pcRemote.SelectedItem)).Side == 1)
-                        ch.RightServer = null;
-
+                    buttonconnect.IsEnabled = true;                  
                     textconnect.Text = "Connect";
                 }
             }
@@ -208,11 +222,16 @@ namespace Client
             pcRemote.ItemsSource = items;
         }
 
+       
+
         public void connectionProblem(Server s)
         {
             if(s.Status != 0)
             { 
-            Mouse.OverrideCursor = Cursors.Arrow;
+            s.Disconnect();
+            stopCapturing();
+             Dispatcher.Invoke(new Action(() =>
+            {
             if(s!= null && s.Side == 0)
             {
                 System.Windows.Forms.MessageBox.Show("C'è un problema di connessione con il LeftServer", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
@@ -222,12 +241,14 @@ namespace Client
                 System.Windows.Forms.MessageBox.Show("C'è un problema di connessione con il RightServer", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
 
             }
-            s.Disconnect();
+
+            }));
             }
         }
 
         private void ListViewItem_OnClick(object sender, MouseButtonEventArgs e)
         {
+
 
             var item = sender as ListViewItem;
             if (item != null && item.IsSelected)
@@ -235,15 +256,24 @@ namespace Client
 
                 var server = ((ListViewItem)sender).Content as Server;
                 currentclickedserver = server;
-                if (!buttonconnect.IsEnabled)
-                    buttonconnect.IsEnabled = true;
 
-                if (server.Status == 1 || server.Status == 2)
+                                   
+                if (server.Status == 1)
                 {
                     textconnect.Text = "Disconnect";
+                    buttonconnect.IsEnabled = true;
                 }
-                else
+                else if (server.Status == 2){
+                    textconnect.Text = "Connecting";
+                    buttonconnect.IsEnabled = false;
+                }
+
+                else if (server.Status == 0)
+                {
                     textconnect.Text = "Connect";
+                    buttonconnect.IsEnabled = true;
+                }
+                    
             }
         }
 

@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Windows.Forms;
 
 
 namespace Client
@@ -173,6 +174,7 @@ namespace Client
 
         }
 
+
         public int KeyboardHookProc(int nCode, IntPtr wParam, IntPtr lParam)
         {
             //Marshall the data from the callback.
@@ -191,13 +193,14 @@ namespace Client
                             //Create a string variable that shows the current mouse coordinates.
                             KBDLLHOOKSTRUCT kb;
                             kb = (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT));
-                            Stream stm;
+               //             Stream stm;
+                          
                             KeyboardStruct ks = new KeyboardStruct();
                             ks.kb = kb;
                             ks.wparam = wParam;
 
-                            stm = currentServer.getStream();
-
+        //                    stm = currentServer.getStream();
+                            UdpClient uc = currentServer.getUdpClient();
                             Int32 ik = 1;
                             byte[] keyboard = BitConverter.GetBytes(ik);
                //             stm.Write(ba, 0, ba.Length);
@@ -208,16 +211,21 @@ namespace Client
                             byte[] sending = new byte[bytestream.Length + sizeof(Int32)];
                             keyboard.CopyTo(sending, 0);
                             bytestream.CopyTo(sending, sizeof(Int32));
-                            stm.Write(sending, 0, sending.Length);
+              //              stm.Write(sending, 0, sending.Length);
+                            uc.Send(sending, sending.Length);
 
 
                             //You must get the active form because it is a static function.
                             if (wParam == (IntPtr)WM_KEYDOWN)//key is down 0
                             {
+                               
+
                                 Console.WriteLine("down sono:" + ks.kb.vkCode);
                             }
                             else if (wParam == (IntPtr)WM_KEYUP) //key is up 1
                             {
+                                
+
                                 Console.WriteLine("up sono:" + ks.kb.vkCode);
 
                             }
@@ -230,11 +238,10 @@ namespace Client
                             currentServer.Status = 0;
                             
       //                      currentServer.Disconnect();
-                            Win.Dispatcher.Invoke(new Action(() =>
-                            {
+                      
                                 Win.stopCapturing();
                                 Win.connectionProblem(currentServer);
-                            }));
+                           
                         }
                 }
             }
@@ -283,10 +290,9 @@ namespace Client
                         currentServer = RightServer;
                         mouse_event(0x0001 | 0x8000, (uint)((8 / width) * 65535), (uint)y, 0, UIntPtr.Zero);
                         currentServer.SendLocalClipboard();
-                        Win.Dispatcher.Invoke(new Action(() =>
-                        {
+                       
                             Win.Capturing();
-                        }));
+                        
     
                         return 1;                                                      
                     }
@@ -298,10 +304,9 @@ namespace Client
                         mouse_event(1 | 0x8000, 65520, (uint)y, 0, UIntPtr.Zero);
                         currentServer.SendLocalClipboard();
 
-                        Win.Dispatcher.Invoke(new Action(() =>
-                        {
+                       
                             Win.Capturing();
-                        }));
+                       
                         return 1;     
 
                     }
@@ -309,29 +314,27 @@ namespace Client
                 if (mystruct.mhs.pt.x <=0 && isCapturing && currentServer == RightServer)
                 {
                    
-                    Mouse.OverrideCursor = Cursors.Arrow;
+       //             Mouse.OverrideCursor = Cursors.Arrow;
                     isCapturing = false;
                     currentServer.GetRemoteClipboard();
                     mouse_event(1 | 0x8000, (uint)(((width - 4) / width) * 65535), (uint)y, 0, UIntPtr.Zero);
-                    Win.Dispatcher.Invoke(new Action(() =>
-                    {
+                   
                         Win.stopCapturing();                      
-                    }));
+                    
 
                     return 1;
                 }
                 else if (mystruct.mhs.pt.x >= width && isCapturing && currentServer == LeftServer)
                 {
                    
-                    Mouse.OverrideCursor = Cursors.Arrow;
+         //           Mouse.OverrideCursor = Cursors.Arrow;
                     isCapturing = false;
                     currentServer.GetRemoteClipboard();
                     mouse_event(1 | 0x8000, (uint)((10 / width) * 65535), (uint)y, 0, UIntPtr.Zero);
 
-                    Win.Dispatcher.Invoke(new Action(() =>
-                    {
+                 
                         Win.stopCapturing();
-                    }));
+                    
                     return 1;
 
                 }
@@ -344,14 +347,15 @@ namespace Client
 
                     mystruct.mhs.pt.x = (int)((mystruct.mhs.pt.x / width) * 65535);
                     mystruct.mhs.pt.y = (int)((mystruct.mhs.pt.y / height) * 65535);
-                    Mouse.OverrideCursor = Cursors.None;
-                    Stream stm;
+                    Mouse.OverrideCursor = System.Windows.Input.Cursors.None;
+                    UdpClient uc = currentServer.getUdpClient();
+     //               Stream stm;
                     String strCaption = "x = " +
                                     MyMouseHookStruct.pt.x.ToString("d") +
                                         "  y = " +
                             MyMouseHookStruct.pt.y.ToString("d");
 
-                    stm = currentServer.getStream();
+  //                  stm = currentServer.getStream();
 
                    Int32 im = 0;
                     byte[] mouse = BitConverter.GetBytes(im);
@@ -362,7 +366,9 @@ namespace Client
                     byte[] sending = new byte[bytestream.Length + sizeof(Int32)];
                     mouse.CopyTo(sending, 0);
                     bytestream.CopyTo(sending, sizeof(Int32));
-                    stm.Write(sending, 0, sending.Length);
+                
+         //           stm.Write(sending, 0, sending.Length);
+                    uc.Send(sending, sending.Length);
 
                     //You must get the active form because it is a static function.
                     Console.WriteLine(strCaption + " event" + msg);
@@ -376,11 +382,10 @@ namespace Client
                         Console.WriteLine(e.Message);
                         isCapturing = false; //da vedere sta parte
         //                currentServer.Disconnect();
-                        Win.Dispatcher.Invoke(new Action(() =>
-                            {
+                       
                                 Win.stopCapturing();
                                 Win.connectionProblem(currentServer);
-                            }));
+                          
 
                     }
 
@@ -431,7 +436,7 @@ namespace Client
                 //If the SetWindowsHookEx function fails.
                 if (hHook == 0)
                 {
-                    MessageBox.Show("SetWindowsHookEx Failed");
+                    System.Windows.MessageBox.Show("SetWindowsHookEx Failed");
                     return;
                 }
                 //  button.Text = "UnHook Windows Hook";
@@ -442,7 +447,7 @@ namespace Client
                 //If the UnhookWindowsHookEx function fails.
                 if (ret == false)
                 {
-                    MessageBox.Show("UnhookWindowsHookEx Failed");
+                    System.Windows.MessageBox.Show("UnhookWindowsHookEx Failed");
                     return;
                 }
                 hHook = 0;
@@ -469,7 +474,7 @@ namespace Client
                 //If the SetWindowsHookEx function fails.
                 if (hkeyHook == 0)
                 {
-                    MessageBox.Show("SetWindowsHookEx Failed");
+                    System.Windows.MessageBox.Show("SetWindowsHookEx Failed");
                     return;
                 }
                 //  button.Text = "UnHook Windows Hook";
@@ -480,7 +485,7 @@ namespace Client
                 //If the UnhookWindowsHookEx function fails.
                 if (ret == false)
                 {
-                    MessageBox.Show("UnhookWindowsHookEx Failed");
+                    System.Windows.MessageBox.Show("UnhookWindowsHookEx Failed");
                     return;
                 }
                 hkeyHook = 0;
