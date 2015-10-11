@@ -239,7 +239,7 @@ namespace Client
                             
       //                      currentServer.Disconnect();
                       
-                                Win.stopCapturing();
+                               
                                 Win.connectionProblem(currentServer);
                            
                         }
@@ -382,8 +382,7 @@ namespace Client
                         Console.WriteLine(e.Message);
                         isCapturing = false; //da vedere sta parte
         //                currentServer.Disconnect();
-                       
-                                Win.stopCapturing();
+                                                      
                                 Win.connectionProblem(currentServer);                         
                     }
 

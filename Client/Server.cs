@@ -37,7 +37,6 @@ namespace Client
         public string WinStatus { get; set; }
         private TcpClient tcpclnt;
         private UdpClient uclient;
-    //    private TcpClient tcpClipBoard;
 
         private ECDiffieHellmanCng exch;
         private byte[] publicKey;
@@ -269,11 +268,8 @@ namespace Client
             }
             catch (Exception ioe)
             {
-         //       Status = 0;
-                Win.Dispatcher.Invoke(new Action(() =>
-                {
+        
                     Win.connectionProblem(this);
-                }));
             }
         }
 
@@ -327,32 +323,6 @@ namespace Client
             bw.RunWorkerAsync();
         }
 
-  /*      public void ConnectClipBoard()
-        {
-            try { 
-            tcpClipBoard = new TcpClient();
-            Console.WriteLine("Connecting ClipBoard....."+ (Port+1));
-            tcpClipBoard.NoDelay = true;
-            tcpClipBoard.Connect(Ip, Port+1);
-
-            StreamWriter stream = new StreamWriter(tcpClipBoard.GetStream());
-
-            stream.WriteLine(0);
-            stream.Flush();
-
-            Console.WriteLine("Connected clipboard");
-            }
-            catch(Exception e)
-            {
-                Disconnect();
-                Win.Dispatcher.Invoke(new Action(() =>
-                {
-                    Win.connectionProblem(this);
-                })); 
-            }
-
-        } */
-
 
         private void DoWorkConnect(object sender, DoWorkEventArgs eventArgs)
         {         
@@ -369,10 +339,6 @@ namespace Client
                 Console.WriteLine("Connecting.....");              
                 Status = 2;
                
-                Win.Dispatcher.Invoke(new Action(() =>
-                {
-                    Win.RefreshListview();
-                }));
                 tcpclnt.NoDelay = true;
 
                 tcpclnt.Connect(Ip, Port);
@@ -462,15 +428,13 @@ namespace Client
             if (!eventArgs.Cancelled && eventArgs.Error == null)
             {
                 bool Connected = (bool)eventArgs.Result;
-                //  Window.SetServer(this);
                 if (!Connected){                  
                     Status = 0;                  
                     Win.AuthFailed();
                     Console.WriteLine("Non connesso");
                 }
                 else
-                {
-                                      
+                {                                      
                     Status = 1;
                 }                   
 
