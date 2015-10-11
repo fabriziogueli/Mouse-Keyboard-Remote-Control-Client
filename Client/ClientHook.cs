@@ -340,7 +340,7 @@ namespace Client
                 }
 
                 
-                if (isCapturing && currentServer != null)
+                if (isCapturing && currentServer != null && currentServer.Status == 1)
                 {
                     try
                     {
@@ -384,9 +384,7 @@ namespace Client
         //                currentServer.Disconnect();
                        
                                 Win.stopCapturing();
-                                Win.connectionProblem(currentServer);
-                          
-
+                                Win.connectionProblem(currentServer);                         
                     }
 
                 }

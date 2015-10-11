@@ -358,7 +358,13 @@ namespace Client
         {         
             try
             {
-               
+
+                IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(Ip), Port);
+                uclient = new UdpClient();
+                uclient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                uclient.DontFragment = true;
+                uclient.Connect(ipep);   
+
                 tcpclnt = new TcpClient();
                 Console.WriteLine("Connecting.....");              
                 Status = 2;
@@ -464,11 +470,7 @@ namespace Client
                 }
                 else
                 {
-                    IPEndPoint ipep = new IPEndPoint(IPAddress.Parse(Ip), Port);
-                    uclient = new UdpClient();
-                    uclient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                    uclient.DontFragment = true;
-                    uclient.Connect(ipep);                     
+                                      
                     Status = 1;
                 }                   
 
