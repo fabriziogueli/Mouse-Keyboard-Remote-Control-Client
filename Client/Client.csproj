@@ -58,7 +58,6 @@
     <Compile Include="connectWindow.xaml.cs">
       <DependentUpon>connectWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MutablePair.cs" />
     <Compile Include="PropertyChangedExtendedEventArgs.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="transparentWin.xaml.cs">
