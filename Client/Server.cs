@@ -457,8 +457,9 @@ namespace Client
             return uclient;
         }
 
-        public void Disconnect()
+        public void Disconnect(Boolean isClosingWin)
         {
+            if(!isClosingWin)
             Status = 0;
 
             try

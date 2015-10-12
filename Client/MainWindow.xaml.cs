@@ -128,7 +128,7 @@ namespace Client
             }
             else if ((Server)pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 1))
             {
-                ((Server)(pcRemote.SelectedItem)).Disconnect();
+                ((Server)(pcRemote.SelectedItem)).Disconnect(false);
                 pcRemote.UnselectAll();
             }
         }
@@ -231,7 +231,7 @@ namespace Client
         {
             if (s.Status != 0)
             {
-                s.Disconnect();
+                s.Disconnect(false);
                 stopCapturing();
                 Dispatcher.Invoke(new Action(() =>
                {
@@ -302,7 +302,7 @@ namespace Client
                     MessageBoxResult mbr = MessageBox.Show("Questo Server è attualmente connesso, sei sicuro di volerlo cancellare?", "Notifica", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (mbr == MessageBoxResult.Yes)
                     {
-                        ((Server)pcRemote.SelectedItem).Disconnect();
+                        ((Server)pcRemote.SelectedItem).Disconnect(false);
                         items.Remove((Server)pcRemote.SelectedItem);
                     }
                 }
@@ -360,6 +360,14 @@ namespace Client
             Thread t = new Thread(MyClipboard.DeleteShare);
             t.Start();
             t.Join();
+
+            if (ch != null && ch.RightServer != null && ch.RightServer.Status == 1)
+                ch.RightServer.Disconnect(true);
+
+            if (ch != null && ch.LeftServer != null && ch.LeftServer.Status == 1)
+                ch.LeftServer.Disconnect(true);
+
+
             Application.Current.Shutdown();
         }
 
