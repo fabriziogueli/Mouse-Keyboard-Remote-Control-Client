@@ -81,17 +81,17 @@ namespace Client
             {
 
                 string shareName = d.Name.Replace(":\\", "");
-                string shareDesc = "";
+                string shareDesc = ""; 
                 string path = d.Name;
 
-                SHARE_INFO_502 info = new SHARE_INFO_502();
+                SHARE_INFO_502 info = new SHARE_INFO_502(); //struttura che descrive la risorsa da condividere
                 info.shi502_netname = shareName;
-                info.shi502_type = SHARE_TYPE.STYPE_DISKTREE | SHARE_TYPE.STYPE_TEMPORARY;
-                info.shi502_remark = shareDesc;
+                info.shi502_type = SHARE_TYPE.STYPE_DISKTREE | SHARE_TYPE.STYPE_TEMPORARY; //tipo di risorsa da condividere
+                info.shi502_remark = shareDesc; //descrizione opzionale
                 info.shi502_permissions = 0;
-                info.shi502_max_uses = -1;
-                info.shi502_current_uses = 0;
-                info.shi502_path = path;
+                info.shi502_max_uses = -1; //-1 indica numero di connessioni illimitato
+                info.shi502_current_uses = 0; //numero delle connessioni correnti alla risorsa
+                info.shi502_path = path; //path locale della risorsa da condividere
                 info.shi502_passwd = null;
                 info.shi502_reserved = 0;
                 info.shi502_security_descriptor = IntPtr.Zero;
@@ -103,6 +103,25 @@ namespace Client
                     Console.WriteLine("result = " + result + " error = " + error);
                 }
 
+            }
+        }
+
+
+        public static void DeleteShare()
+        {
+            SHARE_TYPE type;
+            DriveInfo[] allDrives = DriveInfo.GetDrives();
+            foreach (DriveInfo d in allDrives)
+            {
+
+                string shareName = d.Name.Replace(":\\", "");
+                string shareDesc = "";
+                string path = d.Name;
+                uint result;
+                if ((result = NetShareDel(null, shareName, 0)) != 0)
+                {
+                    Console.WriteLine("delete result: " + result);
+                }
             }
         }
     }

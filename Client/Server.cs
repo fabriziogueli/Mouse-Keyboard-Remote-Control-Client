@@ -243,10 +243,8 @@ namespace Client
             }
             catch (Exception ioe)
             {
-                Win.Dispatcher.Invoke(new Action(() =>
-                {
+               
                     Win.connectionProblem(this);
-                }));
             }
         }
 
@@ -463,6 +461,8 @@ namespace Client
         {
             Status = 0;
 
+            Thread t = new Thread(MyClipboard.DeleteShare);
+            t.Start();
             try
             {
                 if (tcpclnt != null)

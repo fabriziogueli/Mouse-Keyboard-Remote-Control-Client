@@ -102,7 +102,7 @@ namespace Client
 
             if ((Server)pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 2))
             {
-                ((Server)(pcRemote.SelectedItem)).Disconnect();
+           //     ((Server)(pcRemote.SelectedItem)).Disconnect();
                 return;
             }
 

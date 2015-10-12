@@ -185,7 +185,7 @@ namespace Client
             }
             else
             {
-                if (isCapturing && currentServer != null)
+                if (isCapturing && currentServer != null && currentServer.Status == 1)
                 {
 
                     try
@@ -418,8 +418,7 @@ namespace Client
                 {
                     System.Windows.MessageBox.Show("SetWindowsHookEx Failed");
                     return;
-                }
-                //  button.Text = "UnHook Windows Hook";
+                }               
             }
             else
             {
@@ -445,8 +444,7 @@ namespace Client
                 Console.WriteLine("SetWindowsHookEx");
              
                 IntPtr hInstance = LoadLibrary("User32");
-                hkeyHook = SetWindowsHookEx(WH_KEYBOARD_LL, _kproc, hInstance, 0);
-                Console.WriteLine("Dopo SetWindowsHookEx");
+                hkeyHook = SetWindowsHookEx(WH_KEYBOARD_LL, _kproc, hInstance, 0);              
                 //If the SetWindowsHookEx function fails.
                 if (hkeyHook == 0)
                 {
