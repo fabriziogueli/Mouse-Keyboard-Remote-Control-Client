@@ -356,6 +356,10 @@ namespace Client
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+
+            Thread t = new Thread(MyClipboard.DeleteShare);
+            t.Start();
+            t.Join();
             Application.Current.Shutdown();
         }
 

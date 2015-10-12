@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 
 namespace Client
 {
+
+   
     class MyClipboard
     {
-
+        private static uint result = 0;
         [DllImport("Netapi32.dll")]
         private static extern uint NetShareAdd(
             [MarshalAs(UnmanagedType.LPWStr)] string strServer,
@@ -97,7 +99,6 @@ namespace Client
                 info.shi502_security_descriptor = IntPtr.Zero;
 
                 uint error = 0;
-                uint result;
                 if ((result = NetShareAdd(null, 502, ref info, out error)) != 0)
                 {
                     Console.WriteLine("result = " + result + " error = " + error);
@@ -109,6 +110,7 @@ namespace Client
 
         public static void DeleteShare()
         {
+            if (result == 0) return;
             SHARE_TYPE type;
             DriveInfo[] allDrives = DriveInfo.GetDrives();
             foreach (DriveInfo d in allDrives)
@@ -117,8 +119,8 @@ namespace Client
                 string shareName = d.Name.Replace(":\\", "");
                 string shareDesc = "";
                 string path = d.Name;
-                uint result;
-                if ((result = NetShareDel(null, shareName, 0)) != 0)
+                uint res;
+                if ((res = NetShareDel(null, shareName, 0)) != 0)
                 {
                     Console.WriteLine("delete result: " + result);
                 }

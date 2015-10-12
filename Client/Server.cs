@@ -461,8 +461,6 @@ namespace Client
         {
             Status = 0;
 
-            Thread t = new Thread(MyClipboard.DeleteShare);
-            t.Start();
             try
             {
                 if (tcpclnt != null)
