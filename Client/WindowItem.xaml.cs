@@ -33,14 +33,14 @@ namespace Client
             if (CheckData())
             {
                 Console.WriteLine(tusername.Text + "  " + tpassword.Password);
-                mw.addListnewItem(tnickname.Text, tip.Text, Int16.Parse(tport.Text), tusername.Text, tpassword.Password, false);
+                mw.addListnewItem(tnickname.Text, tip.Text, Int32.Parse(tport.Text), tusername.Text, tpassword.Password, false);
                 this.Close();
             }
             else
             {
                 System.Windows.Forms.MessageBox.Show("Inserisci tutti i campi correttamente", "Errore", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-     
+
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -55,7 +55,7 @@ namespace Client
             if (CheckData())
             {
                 Console.WriteLine(tusername.Text + "  " + tpassword.Password);
-                mw.updateServer(tnickname.Text, tip.Text, Int16.Parse(tport.Text), tusername.Text, tpassword.Password, false);
+                mw.updateServer(tnickname.Text, tip.Text, Int32.Parse(tport.Text), tusername.Text, tpassword.Password, false);
                 this.Close();
             }
             else
@@ -67,8 +67,8 @@ namespace Client
         private bool CheckData()
         {
             IPAddress ipadd;
-            if (System.Net.IPAddress.TryParse(tip.Text, out ipadd) && tport.Text.All(char.IsDigit) &&
-               !String.IsNullOrEmpty(tnickname.Text) && !String.IsNullOrEmpty(tusername.Text) && !String.IsNullOrEmpty(tpassword.Password) && !String.IsNullOrEmpty(tport.Text))
+            if (System.Net.IPAddress.TryParse(tip.Text, out ipadd) && tport.Text.All(char.IsDigit) && Int32.Parse(tport.Text) <= 65535
+               && !String.IsNullOrEmpty(tnickname.Text) && !String.IsNullOrEmpty(tusername.Text) && !String.IsNullOrEmpty(tpassword.Password) && !String.IsNullOrEmpty(tport.Text))
             {
                 return true;
             }

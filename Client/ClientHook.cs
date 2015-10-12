@@ -89,7 +89,7 @@ namespace Client
         }
 
         struct KeyboardStruct
-        {           
+        {
             public IntPtr wparam;
             public KBDLLHOOKSTRUCT kb;
             public Int32 padding;
@@ -125,7 +125,7 @@ namespace Client
 
         [DllImport("kernel32.dll")]
         static extern int GetCurrentThreadId();
-       
+
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern IntPtr GetModuleHandle(string lpModuleName);
@@ -149,12 +149,12 @@ namespace Client
 
         public ClientHook()
         {
-           
+
         }
 
         public void serverConnect(Server s, Boolean isRightServer)
         {
-            if(isRightServer)
+            if (isRightServer)
             {
                 RightServer = s;
                 RightServer.Win = Win;
@@ -170,7 +170,7 @@ namespace Client
                 Win.setConnectionHandler(LeftServer);
                 LeftServer.Connect();
             }
-            
+
 
         }
 
@@ -179,79 +179,71 @@ namespace Client
         {
             //Marshall the data from the callback.
 
-                if (nCode < 0)
+            if (nCode < 0)
+            {
+                return CallNextHookEx(hkeyHook, nCode, wParam, lParam);
+            }
+            else
+            {
+                if (isCapturing && currentServer != null)
                 {
-                    return CallNextHookEx(hkeyHook, nCode, wParam, lParam);
-                }
-                else
-                {
-                    if (isCapturing && currentServer != null)
+
+                    try
                     {
+                        //Create a string variable that shows the current mouse coordinates.
+                        KBDLLHOOKSTRUCT kb;
+                        kb = (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT));                     
 
-                        try
-                        {
-                            //Create a string variable that shows the current mouse coordinates.
-                            KBDLLHOOKSTRUCT kb;
-                            kb = (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT));
-               //             Stream stm;
-                          
-                            KeyboardStruct ks = new KeyboardStruct();
-                            ks.kb = kb;
-                            ks.wparam = wParam;
-
-        //                    stm = currentServer.getStream();
-                            UdpClient uc = currentServer.getUdpClient();
-                            Int32 ik = 1;
-                            byte[] keyboard = BitConverter.GetBytes(ik);
-               //             stm.Write(ba, 0, ba.Length);
-
-                            
-
-                            byte[] bytestream = getBytesKey(ks); 
-                            byte[] sending = new byte[bytestream.Length + sizeof(Int32)];
-                            keyboard.CopyTo(sending, 0);
-                            bytestream.CopyTo(sending, sizeof(Int32));
-              //              stm.Write(sending, 0, sending.Length);
-                            uc.Send(sending, sending.Length);
-
-
-                            //You must get the active form because it is a static function.
-                            if (wParam == (IntPtr)WM_KEYDOWN)//key is down 0
-                            {
-                               
-
-                                Console.WriteLine("down sono:" + ks.kb.vkCode);
-                            }
-                            else if (wParam == (IntPtr)WM_KEYUP) //key is up 1
-                            {
-                                
-
-                                Console.WriteLine("up sono:" + ks.kb.vkCode);
-
-                            }
-                            else { Console.WriteLine("default" + ks.wparam); }
-                            return 1;
-                        }
-                        catch(Exception e)
-                        {
-                            isCapturing = false; //da vedere sta parte                         
-                            currentServer.Status = 0;
-                            
-      //                      currentServer.Disconnect();
+                        KeyboardStruct ks = new KeyboardStruct();
+                        ks.kb = kb;
+                        ks.wparam = wParam;
                       
-                               
-                                Win.connectionProblem(currentServer);
-                           
+                        UdpClient uc = currentServer.getUdpClient();
+                        Int32 ik = 1;
+                        byte[] keyboard = BitConverter.GetBytes(ik);                      
+
+                        byte[] bytestream = getBytesKey(ks);
+                        byte[] sending = new byte[bytestream.Length + sizeof(Int32)];
+                        keyboard.CopyTo(sending, 0);
+                        bytestream.CopyTo(sending, sizeof(Int32));
+                       
+                        uc.Send(sending, sending.Length);
+
+
+                        //You must get the active form because it is a static function.
+                        if (wParam == (IntPtr)WM_KEYDOWN)//key is down 0
+                        {
+
+
+                            Console.WriteLine("down sono:" + ks.kb.vkCode);
                         }
+                        else if (wParam == (IntPtr)WM_KEYUP) //key is up 1
+                        {
+
+
+                            Console.WriteLine("up sono:" + ks.kb.vkCode);
+
+                        }
+                        else { Console.WriteLine("default" + ks.wparam); }
+                        return 1;
+                    }
+                    catch (Exception e)
+                    {
+                        isCapturing = false;                         
+                        currentServer.Status = 0;
+                       
+                        Win.connectionProblem(currentServer);
+
+                    }
                 }
             }
-               return CallNextHookEx(hkeyHook, nCode, wParam, lParam); //return 1 evento solo esterno call evento anche interno
-            
+            return CallNextHookEx(hkeyHook, nCode, wParam, lParam); 
+
         }
 
         public int MouseHookProc(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            
+
             //Marshall the data from the callback.
             MouseHookStruct MyMouseHookStruct = (MouseHookStruct)Marshal.PtrToStructure(lParam, typeof(MouseHookStruct));
             int msg = wParam.ToInt32();
@@ -260,17 +252,17 @@ namespace Client
             double height = System.Windows.SystemParameters.PrimaryScreenHeight;
 
             MouseStruct mystruct = new MouseStruct();
-           
+
             mystruct.me = msg;
             mystruct.mhs = MyMouseHookStruct;
 
             int y = (int)((mystruct.mhs.pt.y / height) * 65535);
-           
+
 
 
             short mouseD = (short)(mystruct.mhs.mouseData >> 16);
             mystruct.mhs.mouseData = mouseD;
-          
+
 
             if (nCode < 0)
             {
@@ -282,7 +274,7 @@ namespace Client
 
                 if ((mystruct.mhs.pt.x >= width || mystruct.mhs.pt.x <= 0) && !isCapturing && ((RightServer != null && RightServer.Status == 1) || (LeftServer != null && LeftServer.Status == 1)))
                 {
-                    
+
                     if (mystruct.mhs.pt.x >= width && RightServer != null && RightServer.Status == 1 && !isCapturing)
                     {
                         Console.WriteLine("RightServer");
@@ -290,11 +282,11 @@ namespace Client
                         currentServer = RightServer;
                         mouse_event(0x0001 | 0x8000, (uint)((8 / width) * 65535), (uint)y, 0, UIntPtr.Zero);
                         currentServer.SendLocalClipboard();
-                       
-                            Win.Capturing();
-                        
-    
-                        return 1;                                                      
+
+                        Win.Capturing();
+
+
+                        return 1;
                     }
                     else if (mystruct.mhs.pt.x <= 0 && LeftServer != null && LeftServer.Status == 1 && !isCapturing)
                     {
@@ -304,90 +296,81 @@ namespace Client
                         mouse_event(1 | 0x8000, 65520, (uint)y, 0, UIntPtr.Zero);
                         currentServer.SendLocalClipboard();
 
-                       
-                            Win.Capturing();
-                       
-                        return 1;     
+
+                        Win.Capturing();
+
+                        return 1;
 
                     }
                 }
-                if (mystruct.mhs.pt.x <=0 && isCapturing && currentServer == RightServer)
+                if (mystruct.mhs.pt.x <= 0 && isCapturing && currentServer == RightServer)
                 {
                    
-       //             Mouse.OverrideCursor = Cursors.Arrow;
                     isCapturing = false;
                     currentServer.GetRemoteClipboard();
                     mouse_event(1 | 0x8000, (uint)(((width - 4) / width) * 65535), (uint)y, 0, UIntPtr.Zero);
-                   
-                        Win.stopCapturing();                      
-                    
+
+                    Win.stopCapturing();
+
 
                     return 1;
                 }
                 else if (mystruct.mhs.pt.x >= width && isCapturing && currentServer == LeftServer)
                 {
-                   
-         //           Mouse.OverrideCursor = Cursors.Arrow;
+                  
                     isCapturing = false;
                     currentServer.GetRemoteClipboard();
                     mouse_event(1 | 0x8000, (uint)((10 / width) * 65535), (uint)y, 0, UIntPtr.Zero);
 
-                 
-                        Win.stopCapturing();
-                    
+
+                    Win.stopCapturing();
+
                     return 1;
 
                 }
 
-                
+
                 if (isCapturing && currentServer != null && currentServer.Status == 1)
                 {
                     try
                     {
 
-                    mystruct.mhs.pt.x = (int)((mystruct.mhs.pt.x / width) * 65535);
-                    mystruct.mhs.pt.y = (int)((mystruct.mhs.pt.y / height) * 65535);
-                    Mouse.OverrideCursor = System.Windows.Input.Cursors.None;
-                    UdpClient uc = currentServer.getUdpClient();
-     //               Stream stm;
-                    String strCaption = "x = " +
-                                    MyMouseHookStruct.pt.x.ToString("d") +
-                                        "  y = " +
-                            MyMouseHookStruct.pt.y.ToString("d");
+                        mystruct.mhs.pt.x = (int)((mystruct.mhs.pt.x / width) * 65535);
+                        mystruct.mhs.pt.y = (int)((mystruct.mhs.pt.y / height) * 65535);
+                        Mouse.OverrideCursor = System.Windows.Input.Cursors.None;
+                        UdpClient uc = currentServer.getUdpClient();
+                        String strCaption = "x = " +
+                                        MyMouseHookStruct.pt.x.ToString("d") +
+                                            "  y = " +
+                                MyMouseHookStruct.pt.y.ToString("d");
 
-  //                  stm = currentServer.getStream();
+                        Int32 im = 0;
+                        byte[] mouse = BitConverter.GetBytes(im);
 
-                   Int32 im = 0;
-                    byte[] mouse = BitConverter.GetBytes(im);
-   //                 stm.Write(ba, 0, ba.Length);
-                    
-                    byte[] bytestream = getBytes(mystruct);
-                    Console.WriteLine("Transmitting.....");
-                    byte[] sending = new byte[bytestream.Length + sizeof(Int32)];
-                    mouse.CopyTo(sending, 0);
-                    bytestream.CopyTo(sending, sizeof(Int32));
-                
-         //           stm.Write(sending, 0, sending.Length);
-                    uc.Send(sending, sending.Length);
+                        byte[] bytestream = getBytes(mystruct);
+                        Console.WriteLine("Transmitting.....");
+                        byte[] sending = new byte[bytestream.Length + sizeof(Int32)];
+                        mouse.CopyTo(sending, 0);
+                        bytestream.CopyTo(sending, sizeof(Int32));
 
-                    //You must get the active form because it is a static function.
-                    Console.WriteLine(strCaption + " event" + msg);
+                        uc.Send(sending, sending.Length);
 
-                    if (wParam != (IntPtr)WM_MOUSEMOVE)
-                        return 1;
-                   
+                        //You must get the active form because it is a static function.
+                        Console.WriteLine(strCaption + " event" + msg);
+
+                        if (wParam != (IntPtr)WM_MOUSEMOVE)
+                            return 1;
+
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
-                        isCapturing = false; //da vedere sta parte
-        //                currentServer.Disconnect();
-                                                      
-                                Win.connectionProblem(currentServer);                         
+                        isCapturing = false;                       
+                        Win.connectionProblem(currentServer);
                     }
 
                 }
-                return CallNextHookEx(hHook, nCode, wParam, lParam); //return 1 evento solo esterno call evento anche interno
+                return CallNextHookEx(hHook, nCode, wParam, lParam); 
             }
         }
 
@@ -448,12 +431,11 @@ namespace Client
                     return;
                 }
                 hHook = 0;
-                // button.Text = "Set Windows Hook";
-                // this.Text = "Mouse Hook";
+               
             }
         }
 
-       public void setKeyboardHook()
+        public void setKeyboardHook()
         {
             Console.WriteLine("Inizio Button2");
             if (hkeyHook == 0)
@@ -461,10 +443,7 @@ namespace Client
                 // Create an instance of HookProc.
                 _kproc = new LowLevelKeyboardHookProc(KeyboardHookProc);
                 Console.WriteLine("SetWindowsHookEx");
-                /*          hkeyHook = SetWindowsHookEx(WH_KEYBOARD,
-                                      _kproc,
-                                      (IntPtr)0,
-                                      AppDomain.GetCurrentThreadId()); */
+             
                 IntPtr hInstance = LoadLibrary("User32");
                 hkeyHook = SetWindowsHookEx(WH_KEYBOARD_LL, _kproc, hInstance, 0);
                 Console.WriteLine("Dopo SetWindowsHookEx");
@@ -474,7 +453,7 @@ namespace Client
                     System.Windows.MessageBox.Show("SetWindowsHookEx Failed");
                     return;
                 }
-                //  button.Text = "UnHook Windows Hook";
+          
             }
             else
             {
@@ -486,8 +465,7 @@ namespace Client
                     return;
                 }
                 hkeyHook = 0;
-                // button.Text = "Set Windows Hook";
-                // this.Text = "Mouse Hook";
+          
             }
         }
 

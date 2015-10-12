@@ -32,10 +32,10 @@ namespace Client
         private ObservableCollection<Server> items = new ObservableCollection<Server>();
         public Server currentclickedserver { get; set; }
 
-       
+
         public ClientHook ch { get; set; }
 
-        public WindowItem secondWindow {get; set;}
+        public WindowItem secondWindow { get; set; }
 
         public connectWindow cw { get; set; }
 
@@ -73,11 +73,11 @@ namespace Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
-            if (twin == null)
-                twin = new transparentWin();
+                if (twin == null)
+                    twin = new transparentWin();
 
                 twin.Topmost = true;
-                twin.Activate();              
+                twin.Activate();
                 twin.Show();
                 this.Hide();
             }));
@@ -87,14 +87,14 @@ namespace Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
-            Mouse.OverrideCursor = Cursors.Arrow;
-             if(twin != null)
-             {        
-                 this.Activate();
-                 this.Show();                
-                 twin.Hide();
-             }
-            })); 
+                Mouse.OverrideCursor = Cursors.Arrow;
+                if (twin != null)
+                {
+                    this.Activate();
+                    this.Show();
+                    twin.Hide();
+                }
+            }));
         }
 
         private void Button_Click_Connect(object sender, RoutedEventArgs e)
@@ -138,69 +138,72 @@ namespace Client
         {
             Dispatcher.Invoke(new Action(() =>
             {
-            if (args.PropertyName == "connected")
-            {
-                switch(((Server)sender).Status)
+                if (args.PropertyName == "connected")
                 {
-                    case 0: ((Server)sender).WinStatus = "Disconnected"; break;
-                    case 1: if (((Server)sender).Side == 0)
-                        ((Server)sender).WinStatus = "Connected as LeftServer";
-
-                        else if (((Server)sender).Side == 1)
-                            ((Server)sender).WinStatus = "Connected as RightServer";
-                        break;
-                    case 2: ((Server)sender).WinStatus = "Connecting..."; break;
-                }
-
-                if(cw != null && cw.IsVisible)
-                {
-                    if (ch.LeftServer != null)
+                    switch (((Server)sender).Status)
                     {
-                        if (ch.LeftServer.Status == 1 || ch.LeftServer.Status == 2)
-                        cw.leftbuttonmonitor.IsEnabled = false;
-                        else if(ch.LeftServer.Status == 0)
-                            cw.leftbuttonmonitor.IsEnabled = true;
+                        case 0: ((Server)sender).WinStatus = "Disconnected"; break;
+                        case 1: if (((Server)sender).Side == 0)
+                                ((Server)sender).WinStatus = "Connected as LeftServer";
+
+                            else if (((Server)sender).Side == 1)
+                                ((Server)sender).WinStatus = "Connected as RightServer";
+                            break;
+                        case 2: ((Server)sender).WinStatus = "Connecting..."; break;
                     }
 
-                    if (ch.RightServer != null)
+                    if (cw != null && cw.IsVisible)
                     {
-                        if ((ch.RightServer.Status == 1 || ch.RightServer.Status == 2))
-                        cw.rightbuttonmonitor.IsEnabled = false;
-                        else if(ch.RightServer.Status == 0)
-                            cw.rightbuttonmonitor.IsEnabled = true;
+                        if (ch.LeftServer != null)
+                        {
+                            if (ch.LeftServer.Status == 1 || ch.LeftServer.Status == 2)
+                                cw.leftbuttonmonitor.IsEnabled = false;
+                            else if (ch.LeftServer.Status == 0)
+                                cw.leftbuttonmonitor.IsEnabled = true;
+                        }
+
+                        if (ch.RightServer != null)
+                        {
+                            if ((ch.RightServer.Status == 1 || ch.RightServer.Status == 2))
+                                cw.rightbuttonmonitor.IsEnabled = false;
+                            else if (ch.RightServer.Status == 0)
+                                cw.rightbuttonmonitor.IsEnabled = true;
+                        }
+
                     }
 
-                }
-
-                if (((Server)(sender)).Status == 0)
-                {                    
+                    if (((Server)(sender)).Status == 0)
+                    {
                         stopCapturing();
                         if (((Server)(sender)).Side == 0)
                             ch.LeftServer = null;
                         else if (((Server)(sender)).Side == 1)
                             ch.RightServer = null;
-                }
+                    }
 
-                if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 1))
-                {
-                    buttonconnect.IsEnabled = true;
-                    textconnect.Text = "Disconnect";
-                }
-                else if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 2))
-                {
-                    textconnect.Text = "Connecting";
-                    buttonconnect.IsEnabled = false;
+                    if (pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 1))
+                    {
+                        buttonconnect.IsEnabled = true;
+                        textconnect.Text = "Disconnect";
+                        textconnect.Foreground = new SolidColorBrush(Colors.White);
+                    }
+                    else if (pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 2))
+                    {
+                        textconnect.Text = "Connecting";
+                        textconnect.Foreground = new SolidColorBrush(Colors.Black);
+                        buttonconnect.IsEnabled = false;
 
+                    }
+                    else if (pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 0))
+                    {
+                        buttonconnect.IsEnabled = true;
+                        textconnect.Text = "Connect";
+                        textconnect.Foreground = new SolidColorBrush(Colors.White);
+                    }
                 }
-                else if(pcRemote.SelectedItem != null && (((Server)(pcRemote.SelectedItem)).Status == 0))
-                {
-                    buttonconnect.IsEnabled = true;                  
-                    textconnect.Text = "Connect";
-                }
-            }
-            ICollectionView view = CollectionViewSource.GetDefaultView(items);
-            view.Refresh();
-                }));    
+                ICollectionView view = CollectionViewSource.GetDefaultView(items);
+                view.Refresh();
+            }));
 
         }
 
@@ -215,34 +218,34 @@ namespace Client
             System.Windows.Forms.MessageBox.Show("Connessione fallita, riprova!", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
         }
 
-        public void addListnewItem(String nickName, String ipAddress, Int16 port, string user, string pass, Boolean Connection)
+        public void addListnewItem(String nickName, String ipAddress, Int32 port, string user, string pass, Boolean Connection)
         {
             Server s = new Server(ipAddress, port, nickName, user, pass);
             items.Add(s);
             pcRemote.ItemsSource = items;
         }
 
-       
+
 
         public void connectionProblem(Server s)
         {
-            if(s.Status != 0)
-            { 
-            s.Disconnect();
-            stopCapturing();
-             Dispatcher.Invoke(new Action(() =>
+            if (s.Status != 0)
             {
-            if(s!= null && s.Side == 0)
-            {
-                System.Windows.Forms.MessageBox.Show("C'è un problema di connessione con il LeftServer", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-            }
-            else  if(s!= null && s.Side == 1)
-            {
-                System.Windows.Forms.MessageBox.Show("C'è un problema di connessione con il RightServer", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                s.Disconnect();
+                stopCapturing();
+                Dispatcher.Invoke(new Action(() =>
+               {
+                   if (s != null && s.Side == 0)
+                   {
+                       System.Windows.Forms.MessageBox.Show("C'è un problema di connessione con il LeftServer", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                   }
+                   else if (s != null && s.Side == 1)
+                   {
+                       System.Windows.Forms.MessageBox.Show("C'è un problema di connessione con il RightServer", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
 
-            }
+                   }
 
-            }));
+               }));
             }
         }
 
@@ -257,23 +260,27 @@ namespace Client
                 var server = ((ListViewItem)sender).Content as Server;
                 currentclickedserver = server;
 
-                                   
+
                 if (server.Status == 1)
                 {
                     textconnect.Text = "Disconnect";
+                    textconnect.Foreground = new SolidColorBrush(Colors.White);
                     buttonconnect.IsEnabled = true;
                 }
-                else if (server.Status == 2){
+                else if (server.Status == 2)
+                {
                     textconnect.Text = "Connecting";
+                    textconnect.Foreground = new SolidColorBrush(Colors.Black);
                     buttonconnect.IsEnabled = false;
                 }
 
                 else if (server.Status == 0)
                 {
                     textconnect.Text = "Connect";
+                    textconnect.Foreground = new SolidColorBrush(Colors.White);
                     buttonconnect.IsEnabled = true;
                 }
-                    
+
             }
         }
 
@@ -299,7 +306,7 @@ namespace Client
                         items.Remove((Server)pcRemote.SelectedItem);
                     }
                 }
-                if(items.Count == 0)
+                if (items.Count == 0)
                     textconnect.Text = "Connect";
 
             }
@@ -313,7 +320,7 @@ namespace Client
             if (s == null)
                 return;
 
-            if(s.Status == 1 || s.Status == 2)
+            if (s.Status == 1 || s.Status == 2)
             {
                 System.Windows.Forms.MessageBox.Show("Il server che vuoi modificare è attualmente connesso", "Errore", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
                 return;
@@ -330,13 +337,13 @@ namespace Client
             secondWindow.tport.Text = s.Port.ToString();
             secondWindow.tusername.Text = s.Username;
             secondWindow.tpassword.Password = s.Password;
-            secondWindow.add.Visibility = Visibility.Hidden; 
-            secondWindow.update.Visibility = Visibility.Visible; 
-            secondWindow.Show();        
-       
+            secondWindow.add.Visibility = Visibility.Hidden;
+            secondWindow.update.Visibility = Visibility.Visible;
+            secondWindow.Show();
+
         }
 
-        public void updateServer(String nickName, String ipAddress, Int16 port, string user, string pass, Boolean Connection)
+        public void updateServer(String nickName, String ipAddress, Int32 port, string user, string pass, Boolean Connection)
         {
             Server s = (Server)pcRemote.SelectedItem;
             s.Nickname = nickName;

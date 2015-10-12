@@ -18,14 +18,14 @@
         <Label Foreground="White" Content="NickName" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" FontSize="15" Height="30" Width="79"/>
         <Label Foreground="White" Content="Ip" HorizontalAlignment="Left" Margin="10,74,0,0" VerticalAlignment="Top" FontSize="15" Width="79" Height="30"/>
         <Label Foreground="white" Content="Port" HorizontalAlignment="Left" Margin="10,109,0,0" VerticalAlignment="Top" Width="79" FontSize="15" Height="30"/>
-        <TextBox x:Name="tnickname" HorizontalAlignment="Left" Height="30" Margin="160,43,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="15"/>
-        <TextBox x:Name="tip" HorizontalAlignment="Left" Height="30" Margin="160,78,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="15"/>
-        <TextBox x:Name="tport" HorizontalAlignment="Left" Height="30" Margin="160,113,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="15"/>
+        <TextBox x:Name="tnickname" MaxLength="25" HorizontalAlignment="Left" Height="30" Margin="160,43,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="15"/>
+        <TextBox x:Name="tip" MaxLength="15" HorizontalAlignment="Left" Height="30" Margin="160,78,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="15"/>
+        <TextBox x:Name="tport" MaxLength="5" HorizontalAlignment="Left" Height="30" Margin="160,113,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="15"/>
         <Button x:Name="add" Content="Add" HorizontalAlignment="Left" Margin="125,235,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.025,0.397" FontSize="15" Click="Button_Click"/>
         <Button x:Name="update" Content="Update" HorizontalAlignment="Left" Margin="125,235,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.025,0.397" FontSize="15" Click="Button_Click_update" Visibility="Hidden"/>
         <Label Foreground="white" Content="Username" HorizontalAlignment="Left" Margin="10,148,0,0" VerticalAlignment="Top" FontSize="15" Width="79"/>
-        <TextBox x:Name="tusername" HorizontalAlignment="Left" Height="30" Margin="160,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="15"/>
-        <PasswordBox x:Name="tpassword" HorizontalAlignment="Left" Height="30" Margin="160,183,0,0" VerticalAlignment="Top" Width="120" FontSize="15"/>
+        <TextBox x:Name="tusername" MaxLength="25" HorizontalAlignment="Left" Height="30" Margin="160,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="15"/>
+        <PasswordBox x:Name="tpassword" MaxLength="50" HorizontalAlignment="Left" Height="30" Margin="160,183,0,0" VerticalAlignment="Top" Width="120" FontSize="15"/>
         <Label Foreground="white" Content="Password" HorizontalAlignment="Left" Margin="10,183,0,0" VerticalAlignment="Top" FontSize="15" Width="79"/>
 
     </Grid>

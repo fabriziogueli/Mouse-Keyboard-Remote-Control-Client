@@ -28,7 +28,7 @@ namespace Client
 
         public void Button_ClickRight(object sender, RoutedEventArgs e)
         {
-            mw.ch.serverConnect(mw.currentclickedserver,true);
+            mw.ch.serverConnect(mw.currentclickedserver, true);
             this.Close();
         }
 
@@ -43,6 +43,6 @@ namespace Client
             mw.pcRemote.UnselectAll();
             mw.cw = null;
         }
-     
+
     }
 }

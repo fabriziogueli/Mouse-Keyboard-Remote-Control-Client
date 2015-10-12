@@ -26,7 +26,7 @@ namespace Client
         public string Ip { get; set; }
         public int Port { get; set; }
         public short Side { get; set; } //0 = left - 1 = right
-        
+
         public string Username { get; set; }
 
         public string Nickname { get; set; }
@@ -109,11 +109,11 @@ namespace Client
         }
 
 
-        public Server(string ip, int port,string nickname,string username, string password)
+        public Server(string ip, int port, string nickname, string username, string password)
         {
             Ip = ip;
             Port = port;
-            
+
             Password = password;
             Username = username;
             Nickname = nickname;
@@ -181,15 +181,15 @@ namespace Client
             {
                 Stream stm;
                 stm = tcpclnt.GetStream();
-                int ik = 3; 
+                int ik = 3;
                 byte[] ba = BitConverter.GetBytes(ik);
                 stm.Write(ba, 0, ba.Length);
-               
-               
+
+
                 byte[] dummy = new byte[1];
                 byte[] len = BitConverter.GetBytes(data.Length);
                 stm.Write(len, 0, len.Length);
-               stm.Write(data, 0, data.Length);
+                stm.Write(data, 0, data.Length);
 
             }
 
@@ -200,13 +200,13 @@ namespace Client
         {
             Stream stm;
             stm = tcpclnt.GetStream();
-            int ik = 2; 
+            int ik = 2;
             byte[] ba = BitConverter.GetBytes(ik);
             stm.Write(ba, 0, ba.Length);
-            
+
             byte[] len = new byte[sizeof(int)];
-           stm.Read(len, 0, sizeof(int));
-            
+            stm.Read(len, 0, sizeof(int));
+
             int length = BitConverter.ToInt32(len, 0);
             int read = 0;
             if (length <= 0)
@@ -216,7 +216,7 @@ namespace Client
             {
 
                 read += stm.Read(data, read, length - read);
-               
+
             }
             using (var memStream = new MemoryStream())
             {
@@ -243,8 +243,6 @@ namespace Client
             }
             catch (Exception ioe)
             {
-             //   Status= 0;
-
                 Win.Dispatcher.Invoke(new Action(() =>
                 {
                     Win.connectionProblem(this);
@@ -268,8 +266,8 @@ namespace Client
             }
             catch (Exception ioe)
             {
-        
-                    Win.connectionProblem(this);
+
+                Win.connectionProblem(this);
             }
         }
 
@@ -325,7 +323,7 @@ namespace Client
 
 
         private void DoWorkConnect(object sender, DoWorkEventArgs eventArgs)
-        {         
+        {
             try
             {
 
@@ -333,28 +331,28 @@ namespace Client
                 uclient = new UdpClient();
                 uclient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 uclient.DontFragment = true;
-                uclient.Connect(ipep);   
+                uclient.Connect(ipep);
 
                 tcpclnt = new TcpClient();
-                Console.WriteLine("Connecting.....");              
+                Console.WriteLine("Connecting.....");
                 Status = 2;
-               
+
                 tcpclnt.NoDelay = true;
 
                 tcpclnt.Connect(Ip, Port);
                 Console.WriteLine("Connected");
 
-                tcpclnt.GetStream().Write(publicKey, 0, publicKey.Length);               
+                tcpclnt.GetStream().Write(publicKey, 0, publicKey.Length);
                 byte[] serverPublicKey = new byte[72];
                 tcpclnt.GetStream().Read(serverPublicKey, 0, 72);
                 byte[] derivedKey =
                     exch.DeriveKeyMaterial(CngKey.Import(serverPublicKey, CngKeyBlobFormat.EccPublicBlob));
-                
+
                 StreamWriter stream = new StreamWriter(tcpclnt.GetStream());
-               
+
                 stream.WriteLine(Username);
                 stream.Flush();
-                             
+
                 Aes aes = new AesCryptoServiceProvider();
                 aes.Key = derivedKey;
                 byte[] bytes = new byte[aes.BlockSize / 8];
@@ -366,28 +364,28 @@ namespace Client
                 MemoryStream ms = new MemoryStream(64);
                 CryptoStream csEncrypt = new CryptoStream(ms, encryptor, CryptoStreamMode.Write);
                 byte[] passArr = Encoding.UTF8.GetBytes(Password);
-               
+
                 csEncrypt.Write(passArr, 0, passArr.Length);
                 csEncrypt.Close();
-                
+
 
                 byte[] tosend = ms.ToArray();
-               
-               
+
+
                 string encpass = Convert.ToBase64String(tosend, 0, tosend.Length);
-             
-                stream.WriteLine(encpass); 
+
+                stream.WriteLine(encpass);
                 stream.Flush();
-              
-                
+
+
                 byte[] auth = new byte[sizeof(bool)];
-                tcpclnt.GetStream().Read(auth, 0, sizeof(bool)); //TODO IOException
+                tcpclnt.GetStream().Read(auth, 0, sizeof(bool));
 
                 bool result = BitConverter.ToBoolean(auth, 0);
-               
-                 eventArgs.Result = result;              
 
-            
+                eventArgs.Result = result;
+
+
             }
             catch (Exception ioe)
             {
@@ -428,23 +426,24 @@ namespace Client
             if (!eventArgs.Cancelled && eventArgs.Error == null)
             {
                 bool Connected = (bool)eventArgs.Result;
-                if (!Connected){                  
-                    Status = 0;                  
+                if (!Connected)
+                {
+                    Status = 0;
                     Win.AuthFailed();
                     Console.WriteLine("Non connesso");
                 }
                 else
-                {                                      
+                {
                     Status = 1;
-                }                   
+                }
 
             }
             else
             {
                 Console.WriteLine(eventArgs.Error.Message);
                 Status = 0;
-               
-                
+
+
             }
 
 
@@ -463,7 +462,7 @@ namespace Client
         public void Disconnect()
         {
             Status = 0;
-           
+
             try
             {
                 if (tcpclnt != null)
@@ -471,7 +470,7 @@ namespace Client
                     tcpclnt.GetStream().Dispose();
                     tcpclnt.Close();
                     tcpclnt = null;
-                  
+
                 }
 
                 if (uclient != null)
@@ -480,7 +479,7 @@ namespace Client
                     uclient.Close();
 
                 }
-                    
+
 
                 uclient = null;
 
@@ -489,7 +488,7 @@ namespace Client
             {
 
                 tcpclnt = null;
-                uclient = null;              
+                uclient = null;
             }
 
         }
